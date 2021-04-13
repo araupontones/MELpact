@@ -88,7 +88,7 @@ download_report <- function(dir_downloads,
         anti_join(download_data, by=c("ID"))
 
       ##append data
-      reference_appended <- rbind(old_records, download_data)
+      reference_appended <- plyr::rbind.fill(old_records, download_data)
 
       #export
       rio::export(reference_appended, exfile)

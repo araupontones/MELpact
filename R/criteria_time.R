@@ -14,7 +14,7 @@ criteria_time <- function(reference_data){
   reference_data[["sorted"]] <- clock::date_time_parse(modified_time, zone = "UTC", format = "%d-%b-%Y %H:%M:%S")
   last_modified_time<- last(reference_data[["Modified_Time"]], order_by =  reference_data[["sorted"]])
 
-  criteria_to_export = glue::glue("Modified_Time>'{last_modified_time}'")
+  criteria_to_export = glue::glue("Modified_Time>='{last_modified_time}'")
 
   return(criteria_to_export)
 }
