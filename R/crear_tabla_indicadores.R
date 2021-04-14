@@ -2,13 +2,13 @@
 #'
 #' @param  db A tibble with the indicators to be presented in the table.  This is the output
 #' of \code{create_tibble_count()}
-#' @param exit_dir A directory where excel file is exported
-#' @param exit_dir A string with the name of the excel.xlsx file to be crated
+#' @param exdir A directory where excel file is exported
+#' @param exfile A string with the name of the excel.xlsx file to be crated
 #'
 #' @return an excel sheet stored in exit_dir/file_xlsx
 
 
-crear_tabla_indicadores = function(db = data_c, file_xlsx, exit_dir){
+create_xlsxs_count = function(db = data_c, exfile, exdir){
 
 
 
@@ -17,13 +17,13 @@ crear_tabla_indicadores = function(db = data_c, file_xlsx, exit_dir){
 
   addWorksheet(wb, sheetName = "sheet", zoom = 100, orientation = 'landscape')
 
-  exfile = file.path(exit_dir, file_xlsx)
-  print(exfile)
+  exfile = file.path(exdir, exfile)
+  message(exfile)
 
   #header = names(get(data_c))[-1]
   header = names(db)[-1]
 
-  print(header)
+  #print(header)
 
   ## set column widths
   setColWidths(wb,  sheet="sheet", cols=1, widths = 53.7) ## set column width for row names column
