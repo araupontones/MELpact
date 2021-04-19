@@ -14,6 +14,7 @@ download_report <- function(dir_downloads,
                             access_token,
                             ...){
 
+  message(glue("Dowloading: {zoho_report} ..."))
   #check if dir_downloads exist ------------------------------------------
   if(!dir.exists(dir_downloads)){
 
@@ -21,24 +22,20 @@ download_report <- function(dir_downloads,
 
   }
 
+
   #define exfile ------------------------------------------------------------
   exfile <- file.path(dir_downloads, paste0(zoho_report,".rds"))
 
 
   #refresh token -----------------------------------------------------------
 
-  refresh_if_needed <- function(){
-    new_token <- refresh_pact_token(refresh_token = access_token) #create new token
-    assign("new_token", new_token, envir = globalenv()) ##save token in global environment
-    assign("last_token_refreshed", Sys.time(), envir = globalenv()) #last time token was generated
-  }
 
   #refresh if it has never been refreshed
   if(!exists("last_token_refreshed")){
     message("Creating token")
 
-    refresh_if_needed()
 
+    refresh_pact_token(refresh_token = access_token)
   }
 
 
@@ -50,59 +47,49 @@ download_report <- function(dir_downloads,
   #refresh if more thatn 3,580 seconds have passed since the last time it was refreshed
   if(time_diff > 3580){
 
-    refresh_if_needed()
+
+    refresh_pact_token(refresh_token = access_token)
     message(glue::glue("Token was refrehed {time_diff} seconds ago: Refreshing token!"))
 
   }
 
   #Download for the first time if file doesn't exist in dir_download -----------------
-  if(!file.exists(exfile)){
+  #2. download report
+  reporte <- get_report(
+    url_app = "https://creator.zoho.com" ,
+    account_owner_name = "araupontones" ,
+    app_link_name = "uk-pact",
+    report_link_name = zoho_report,
+    access_token = new_token,
+    criteria = "ID != 0",
+    from = 1
+  )
 
-    #get report from zoho
-    reporte <- api_get_report(zoho_report = zoho_report,
-                              criteria = "ID!=0",
-                              new_token = new_token)
+  rows <- nrow(reporte)
+  from <- nrow(reporte)
 
+  while(rows >=200){
 
-    #export report to downloads
-    rio::export(reporte, exfile)
-    message(glue::glue("Creating {zoho_report} in {dir_downloads}"))
+    reporte_2 <- get_report(
+      url_app = "https://creator.zoho.com" ,
+      account_owner_name = "araupontones" ,
+      app_link_name = "uk-pact",
+      report_link_name = zoho_report,
+      access_token = new_token,
+      criteria = "ID != 0",
+      from = from
+    )
 
+    rows <- nrow(reporte_2)
+    reporte <- rbind(reporte, reporte_2)
 
-  } else {
-
-    #IN CASE REPORT EXISTS IN DOWNLOADS, get last modified time of report ---------------
-    reference_data <- rio::import(exfile)
-    modified_time <- criteria_time(reference_data)
-
-    #download latest modified records
-    download_data <- api_get_report(zoho_report = zoho_report,
-                                    criteria = modified_time,
-                                    new_token = new_token)
-
-    #if at least one record has been modified since the last time
-    if(!is.null(download_data)){
-
-      #drop from reference records that have been updated
-      old_records <- reference_data %>%
-        anti_join(download_data, by=c("ID"))
-
-      ##append data
-      reference_appended <- plyr::rbind.fill(old_records, download_data)
-
-      #export
-      rio::export(reference_appended, exfile)
-      message(glue::glue("{zoho_report} has been updated in {dir_downloads}"))
-
-    } else {
-
-
-      message(glue::glue("{zoho_report} has not been modified in Zoho since {modified_time}"))
-    }
-
-
+    from <- nrow(reporte) +1
 
   }
+
+
+  message(glue("Observations: {from-1} ..."))
+  rio::export(reporte, exfile)
 
 
 }

@@ -11,7 +11,7 @@ new_token <- zohor::refresh_token(
   refresh_token = refresh_token
 )
 
-return(new_token)
+#return(new_token)
 
 }
 

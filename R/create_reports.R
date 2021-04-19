@@ -59,7 +59,7 @@ create_reports <- function(dir_downloads = "downloads",
   clean_resultados <- data_resultados %>%
     select(Project, Description_new, starts_with("training"),
            Result_Title, result_logframe, type_result,
-           Quarter, Status, funds, Modified_Time) %>%
+           Quarter, Status, funds, Modified_Time, ID) %>%
     rename(Quarter_reported = Quarter) %>%
     ## count indicator (the variable counts, counts the number of times and indicator has been met)
     mutate(count = if_else(str_detect(result_logframe, "Int. Out. 4|Outcome 4"), as.numeric(funds), 1)) %>%
@@ -214,6 +214,7 @@ create_reports <- function(dir_downloads = "downloads",
   reporte_clean$Implementor = data_projects$Implementor[match(reporte_clean$Project, data_projects$Project_Name)]
   reporte_clean$Country = data_projects$Country[match(reporte_clean$Project, data_projects$Project_Name)]
   reporte_clean$component = data_projects$Lot[match(reporte_clean$Project, data_projects$Project_Name)]
+  reporte_clean$ID_Project = data_projects$ID[match(reporte_clean$Project, data_projects$Project_Name)]
 
 
 
@@ -255,9 +256,12 @@ create_reports <- function(dir_downloads = "downloads",
 
   write.csv(indicators, file.path(dir_clean, "indicators.csv"))
   write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
+  write.csv(reporte_clean, file.path(dir_clean, "reporte_clean.csv"))
 
+  #export reports
   return(list(indicators = indicators,
               reporte_cuenta = reporte_cuenta,
+              reporte_clean = reporte_clean,
               quarters = quarters))
 
 
