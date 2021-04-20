@@ -251,7 +251,7 @@ create_reports <- function(dir_downloads = "downloads",
 
   indicators$Implementor = data_projects$Implementor[match(indicators$Project, data_projects$Project_Name)]
   indicators$Country = data_projects$Country[match(indicators$Project, data_projects$Project_Name)]
-
+  indicators$Component = data_projects$Lot[match(indicators$Project, data_projects$Project_Name)]
 
   refreshed_time <- paste("Last refreshed:", format(Sys.time(), "%d %B %Y at %d %X", usetz = TRUE))
 
