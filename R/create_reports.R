@@ -253,7 +253,10 @@ create_reports <- function(dir_downloads = "downloads",
   indicators$Country = data_projects$Country[match(indicators$Project, data_projects$Project_Name)]
 
 
+  refreshed_time <- paste("Last refreshed:", format(Sys.time(), "%d %B %Y at %d %X", usetz = TRUE))
 
+
+  write_rds(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
   write.csv(indicators, file.path(dir_clean, "indicators.csv"))
   write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
   write.csv(reporte_clean, file.path(dir_clean, "reporte_clean.csv"))
@@ -262,7 +265,9 @@ create_reports <- function(dir_downloads = "downloads",
   return(list(indicators = indicators,
               reporte_cuenta = reporte_cuenta,
               reporte_clean = reporte_clean,
-              quarters = quarters))
+              quarters = quarters,
+              refreshed_time = paste("Last refreshed:", format(Sys.time(), "%d %B %Y at %d %X", usetz = TRUE))
+  ))
 
 
 
