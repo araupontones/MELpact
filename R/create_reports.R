@@ -49,7 +49,10 @@ create_reports <- function(dir_downloads = "downloads",
   names(downloaded_reports) <- reports
 
   data_projects <- downloaded_reports$all_projects
+
+
   data_resultados <- downloaded_reports$Download_outputs
+
   #define levels of quarters
   quarters <- sort(c(downloaded_reports$All_Quarters$quarter, NA))
 
@@ -259,7 +262,10 @@ create_reports <- function(dir_downloads = "downloads",
   write_rds(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
   write.csv(indicators, file.path(dir_clean, "indicators.csv"))
   write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
-  write.csv(reporte_clean, file.path(dir_clean, "reporte_clean.csv"))
+
+
+  write.csv(reporte_clean, file.path(dir_clean, "reporte_clean.csv")) #for power bi
+  export(reporte_clean, file.path(dir_clean, "reporte_clean.rds")) #for shiny
 
   #export reports
   return(list(indicators = indicators,
