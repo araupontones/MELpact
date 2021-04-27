@@ -54,8 +54,7 @@ create_reports <- function(dir_downloads = "downloads",
   data_resultados <- downloaded_reports$Download_outputs
 
   #define levels of quarters
-  quarters <- sort(c(downloaded_reports$All_Quarters$quarter, NA))
-
+  quarters <- sort(c(downloaded_reports$All_Quarters$quarter, "Unexpected", NA))
 
 
   #Clean and count reported results -------------------------------------------
@@ -110,7 +109,7 @@ create_reports <- function(dir_downloads = "downloads",
 
 
 
-## Read the expected results ---------------------------------------------------
+  ## Read the expected results ---------------------------------------------------
 
   ## Append expected results
   expected = str_detect(reports, "expected")
@@ -131,7 +130,6 @@ create_reports <- function(dir_downloads = "downloads",
 
 
 
-
   #### Reporte con resultados alcanzados y expected ------------------------------
   reporte_raw=
     #' results reported
@@ -145,9 +143,12 @@ create_reports <- function(dir_downloads = "downloads",
       count = if_else(is.na(count) & Was_expected == T, 0, count),
       #' identify if the result was expected
       Was_expected = case_when(is.na(Was_expected) ~ F,
-                               T ~ T)
+                               T ~ T),
+      Quarter_expected = case_when(Was_expected == F ~ "Unexpected",
+                                   T ~ Quarter_expected)
 
     )
+
 
 
 
@@ -229,6 +230,7 @@ create_reports <- function(dir_downloads = "downloads",
                  values_to = "Quarter") %>%
     ##no contar los resultados que han sido rechazados
     filter(!is.na(Quarter),
+           Quarter != "Unexpected",
            !(Status=="Rejected" & Tipo =="Quarter_reported")) %>%
     ##Empezar a contar
     mutate(Was_expected = if_else(Tipo == "Quarter_reported", F, Was_expected),
@@ -274,11 +276,6 @@ create_reports <- function(dir_downloads = "downloads",
               quarters = quarters,
               refreshed_time = paste("Last refreshed:", format(Sys.time(), "%d %B %Y at %d %X", usetz = TRUE))
   ))
-
-
-
-
-
 
 
 

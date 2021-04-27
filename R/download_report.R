@@ -81,7 +81,7 @@ download_report <- function(dir_downloads,
     )
 
     rows <- nrow(reporte_2)
-    reporte <- rbind(reporte, reporte_2)
+    reporte <- plyr::rbind.fill(reporte, reporte_2) ##!!
 
     from <- nrow(reporte) +1
 
