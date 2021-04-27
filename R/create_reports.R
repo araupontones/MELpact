@@ -261,9 +261,15 @@ create_reports <- function(dir_downloads = "downloads",
   refreshed_time <- paste("Last refreshed:", format(Sys.time(), "%d %B %Y at %d %X", usetz = TRUE))
 
 
+  #export files
   write_rds(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
   write.csv(indicators, file.path(dir_clean, "indicators.csv"))
   write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
+
+
+  #drop skills from reporte to dashboard (it was creating duplicates)
+  reporte_clean <- reporte_clean %>%
+    filter(!str_detect(Indicator, "Output 1.1|Output 1.2"))
 
 
   write.csv(reporte_clean, file.path(dir_clean, "reporte_clean.csv")) #for power bi
