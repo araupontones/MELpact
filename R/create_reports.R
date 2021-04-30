@@ -64,7 +64,11 @@ create_reports <- function(dir_downloads = "downloads",
            Quarter, Status, funds, Modified_Time, ID) %>%
     rename(Quarter_reported = Quarter) %>%
     ## count indicator (the variable counts, counts the number of times and indicator has been met)
-    mutate(count = if_else(str_detect(result_logframe, "Int. Out. 4|Outcome 4"), as.numeric(funds), 1)) %>%
+    mutate(count = if_else(str_detect(result_logframe, "Int. Out. 4|Outcome 4"), as.numeric(funds), 1),
+           Quarter_reported = case_when(str_detect(Quarter_reported, "list") ~ str_extract(Quarter_reported, '(?<=display_value = \")(.*?)(?=\\")'),
+                                        T ~ Quarter_reported
+           )
+    ) %>%
     select(-funds)
 
 
