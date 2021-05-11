@@ -1,3 +1,4 @@
+
 #Expected vs approved (three columns: indicator, expected, approved group by dimension)
 
 #' @param  db a tibble of reporte cuenta
@@ -9,23 +10,42 @@
 #'
 
 tibble_expected_vs_approved <- function(db = reporte_cuenta,
-                                        by = c("Country", "PACT"),
-                                        filter_country = "",
-                                        up_to_quarter = quarter_filter,
-                                        previous_quarter = previous_quarter,
-                                        ...){
+                                         by = c("Country", "PACT", "Component"),
+                                         filter_country = "",
+                                         filter_component = "",
+                                         up_to_quarter = quarter_filter,
+                                         previous_quarter = previous_quarter,
+                                         ...){
 
   #keep of all countries if PACT is selected
   if(by == "PACT"){
 
-    filter_country <- unique(db$Country)
+    data <- db
+
+    message("PACT")
 
   }
 
-  message(filter_country)
+  #PACT and Country are filter by country
+  if(by == "Country"){
 
-  data <- db %>%
-    filter(Country %in% filter_country)
+    data <- db %>%
+      filter(Country %in% filter_country)
+
+    message(filter_country)
+
+  }
+
+  if(by == "Component"){
+
+    data <- db %>%
+      filter(component == filter_component)
+
+    message(filter_component)
+
+  }
+
+
 
 
   #All data till today
