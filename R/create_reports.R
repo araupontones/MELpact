@@ -269,6 +269,7 @@ create_reports <- function(dir_downloads = "downloads",
   write_rds(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
   write.csv(indicators, file.path(dir_clean, "indicators.csv"))
   write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
+  write_rds(reporte_cuenta, file.path(dir_clean,"reporte_cuenta.rds"))
 
 
   #drop skills from reporte to dashboard (it was creating duplicates)
