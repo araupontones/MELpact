@@ -62,7 +62,8 @@ create_reports <- function(dir_downloads = "downloads",
            Quarter, Status, funds, Modified_Time, ID) %>%
     rename(Quarter_reported = Quarter) %>%
     ## count indicator (the variable counts, counts the number of times and indicator has been met)
-    mutate(count = if_else(str_detect(result_logframe, "Int. Out. 4|Outcome 4"), as.numeric(funds), 1),
+    mutate(count = case_when(str_detect(result_logframe, "Int. Out 4|Outcome 4") ~ as.numeric(funds),
+                             T ~ 1),
            Quarter_reported = case_when(str_detect(Quarter_reported, "list") ~ str_extract(Quarter_reported, '(?<=display_value = \")(.*?)(?=\\")'),
                                         T ~ Quarter_reported
            )
@@ -116,7 +117,7 @@ create_reports <- function(dir_downloads = "downloads",
   ## Read the expected results ---------------------------------------------------
 
   ## Append expected results
-  expected = str_detect(reports, "expected")
+
 
 
   expected_results = do.call(plyr::rbind.fill,downloaded_reports[expected]) %>%
@@ -142,11 +143,14 @@ create_reports <- function(dir_downloads = "downloads",
               suffix = c("_reported", "_expected")) %>%
     #' clean indicators for expected results
     mutate(
-      #'set count to 0 if the result was expected
-      count = if_else(is.na(count) & Was_expected == T, 0, count),
-      #' identify if the result was expected
+      #identify if the result was expected
       Was_expected = case_when(is.na(Was_expected) ~ F,
                                T ~ T),
+      #'set count to 0 if the result was expected but has not been reported
+      count = case_when(is.na(count) & Was_expected == T ~ 0,
+                        T ~ count),
+
+
       Quarter_expected = case_when(Was_expected == F ~ "Unexpected",
                                    T ~ Quarter_expected)
 
@@ -211,7 +215,8 @@ create_reports <- function(dir_downloads = "downloads",
                levels = quarters,
                ordered = T)
       })
-    )
+    ) %>%
+    distinct() #to remove duplicates
 
 
 
@@ -223,29 +228,28 @@ create_reports <- function(dir_downloads = "downloads",
   reporte_clean$Project_QA = data_projects$Project_qa[match(reporte_clean$Project, data_projects$Project_Name)]
 
 
-
   ### Re-formatear para poder contar Expected and Approved por quarter
-  ### Re-formatear para poder contar Expected and Approved por quarter
-  reporte_cuenta = reporte_clean %>%
-    dplyr::filter(Project_QA == "Yes") %>%#this is what Martina asked for in APR2
+  reporte_cuenta <- reporte_clean %>%
+    dplyr::filter(Project_QA == "Yes",
+                  Status %in% c("Approved", "Not reported yet")
+    ) %>%#this is what Martina asked for in APR2
     pivot_longer(cols = c("Quarter_expected", "Quarter_reported"),
                  names_to = "Tipo",
-                 values_to = "Quarter") %>%
+                 values_to = "Quarter")  %>%
     ##no contar los resultados que han sido rechazados
-    filter(!is.na(Quarter),
-           Quarter != "Unexpected",
-           Status %in% c("Approved","Not reported yet")
-           )%>%
+    filter(#!is.na(Quarter),
+      Quarter != "Unexpected"
+    ) %>%
     ##Empezar a contar
-    mutate(Was_expected = if_else(Tipo == "Quarter_reported", F, Was_expected),
-           count = if_else(Tipo == "Quarter_expected", 0, count)) %>%
+    mutate(Was_expected = Tipo =='Quarter_expected', #count expected indicators
+           count = case_when(Tipo == "Quarter_reported" ~ count,
+                             T ~ 0)
+    ) %>%
     ##Crear cuenta de expected y achieved
     group_by(component,Country,Element, Indicator, Quarter) %>%
     summarise(Approved = sum(count, na.rm = T),
               Expected = sum(Was_expected),
               .groups = 'drop')
-
-
 
 
 
