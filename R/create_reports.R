@@ -225,6 +225,7 @@ create_reports <- function(dir_downloads = "downloads",
 
 
   ### Re-formatear para poder contar Expected and Approved por quarter
+  ### Re-formatear para poder contar Expected and Approved por quarter
   reporte_cuenta = reporte_clean %>%
     dplyr::filter(Project_QA == "Yes") %>%#this is what Martina asked for in APR2
     pivot_longer(cols = c("Quarter_expected", "Quarter_reported"),
@@ -233,7 +234,8 @@ create_reports <- function(dir_downloads = "downloads",
     ##no contar los resultados que han sido rechazados
     filter(!is.na(Quarter),
            Quarter != "Unexpected",
-           !(Status=="Rejected" & Tipo =="Quarter_reported")) %>%
+           Status %in% c("Approved","Not reported yet")
+           )%>%
     ##Empezar a contar
     mutate(Was_expected = if_else(Tipo == "Quarter_reported", F, Was_expected),
            count = if_else(Tipo == "Quarter_expected", 0, count)) %>%
@@ -242,6 +244,8 @@ create_reports <- function(dir_downloads = "downloads",
     summarise(Approved = sum(count, na.rm = T),
               Expected = sum(Was_expected),
               .groups = 'drop')
+
+
 
 
 
