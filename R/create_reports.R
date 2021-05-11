@@ -229,6 +229,7 @@ create_reports <- function(dir_downloads = "downloads",
 
   ### Re-formatear para poder contar Expected and Approved por quarter
   reporte_cuenta = reporte_clean %>%
+    dplyr::filter(Project.Project_qa == "Yes") %>% #this is what Martina asked for in APR2
     pivot_longer(cols = c("Quarter_expected", "Quarter_reported"),
                  names_to = "Tipo",
                  values_to = "Quarter") %>%
