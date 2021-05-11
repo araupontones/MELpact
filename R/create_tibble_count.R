@@ -8,10 +8,11 @@
 
 
 tibble_cuenta_achieved <- function(db,
-                                   group_by,
-                                   by_quarter = F,
-                                   by_country = F,
-                                   filter_country =" ", ...){
+                                    group_by,
+                                    by_quarter = F,
+                                    up_to_quarter = quarter_filter,
+                                    by_country = F,
+                                    filter_country =" ", ...){
 
   #' allow user to filter by COUNTRY of interest
   if(by_country==F){
@@ -30,7 +31,7 @@ tibble_cuenta_achieved <- function(db,
   } else {
 
     #'quarter filter is defined in the set_up script
-    filter_quarter = quarter_filter
+    filter_quarter = up_to_quarter
   }
 
 
@@ -54,4 +55,3 @@ tibble_cuenta_achieved <- function(db,
   return(data_chart)
 
 }
-
