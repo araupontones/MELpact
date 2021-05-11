@@ -118,6 +118,7 @@ create_reports <- function(dir_downloads = "downloads",
 
   ## Append expected results
 
+  expected = str_detect(reports, "expected")
 
 
   expected_results = do.call(plyr::rbind.fill,downloaded_reports[expected]) %>%
