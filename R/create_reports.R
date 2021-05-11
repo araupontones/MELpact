@@ -33,7 +33,7 @@ create_reports <- function(dir_downloads = "downloads",
   })
 
 
-#import reports into environment -----------------------------------------------
+  #import reports into environment -----------------------------------------------
   downloaded_reports <- lapply(reports, function(report){
 
     rds <- paste0(report,".rds")
@@ -43,19 +43,17 @@ create_reports <- function(dir_downloads = "downloads",
     message(glue::glue("{report} observations: {nrow(dd_report)}"))
     return(dd_report)
 
-   })
+  })
 
 
   names(downloaded_reports) <- reports
 
   data_projects <- downloaded_reports$all_projects
 
-
   data_resultados <- downloaded_reports$Download_outputs
 
   #define levels of quarters
   quarters <- sort(c(downloaded_reports$All_Quarters$quarter, "Unexpected", NA))
-
 
   #Clean and count reported results -------------------------------------------
   clean_resultados <- data_resultados %>%
@@ -102,6 +100,7 @@ create_reports <- function(dir_downloads = "downloads",
 
 
 
+
   ## Append resultados con skills (This contains all the results reported so far)
   achieved_results= clean_resultados %>%
     #'drop training unclean indicators
@@ -113,6 +112,7 @@ create_reports <- function(dir_downloads = "downloads",
 
 
 
+
   ## Read the expected results ---------------------------------------------------
 
   ## Append expected results
@@ -120,7 +120,7 @@ create_reports <- function(dir_downloads = "downloads",
 
 
   expected_results = do.call(plyr::rbind.fill,downloaded_reports[expected]) %>%
-    select(-c(Project.Country, ID, ID_Date_field, ID_Project)) %>%
+    select(-c(Project.Country, ID, ID_Date_field, ID_Project, Project.Project_qa)) %>%
     rename(Quarter_expected = Date_field) %>%
     #Identify results that were expected
     mutate(Was_expected = T,
@@ -130,7 +130,6 @@ create_reports <- function(dir_downloads = "downloads",
                                         Quarter_expected =="" ~NA_character_,
                                         T ~ Quarter_expected)
     )
-
 
 
 
@@ -154,24 +153,22 @@ create_reports <- function(dir_downloads = "downloads",
     )
 
 
-
-
   ### Clean for good presentation -----------------------------------------------
 
 
   #'Define elements of the logframe
-  elements = c("Output 1: Skills enhanced",
-               "Output 2: Recommendations proposed",
-               "Output 3: Knowledge generated and disseminated",
-               "Output 4: Networks created and strengthened",
-               "Intermediate Outcomes",
-               "Outcomes"
+  elements <- c("Output 1: Skills enhanced",
+                "Output 2: Recommendations proposed",
+                "Output 3: Knowledge generated and disseminated",
+                "Output 4: Networks created and strengthened",
+                "Intermediate Outcomes",
+                "Outcomes"
 
   )
 
 
 
-  reporte_clean = reporte_raw %>%
+  reporte_clean <- reporte_raw %>%
     rename(Indicator = result_logframe) %>%
     mutate(
 
@@ -223,13 +220,13 @@ create_reports <- function(dir_downloads = "downloads",
   reporte_clean$Country = data_projects$Country[match(reporte_clean$Project, data_projects$Project_Name)]
   reporte_clean$component = data_projects$Lot[match(reporte_clean$Project, data_projects$Project_Name)]
   reporte_clean$ID_Project = data_projects$ID[match(reporte_clean$Project, data_projects$Project_Name)]
-
+  reporte_clean$Project_QA = data_projects$Project_qa[match(reporte_clean$Project, data_projects$Project_Name)]
 
 
 
   ### Re-formatear para poder contar Expected and Approved por quarter
   reporte_cuenta = reporte_clean %>%
-    dplyr::filter(Project.Project_qa == "Yes") %>% #this is what Martina asked for in APR2
+    dplyr::filter(Project_QA == "Yes") %>%#this is what Martina asked for in APR2
     pivot_longer(cols = c("Quarter_expected", "Quarter_reported"),
                  names_to = "Tipo",
                  values_to = "Quarter") %>%
