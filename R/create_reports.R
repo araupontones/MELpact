@@ -185,6 +185,7 @@ create_reports <- function(dir_downloads = "downloads",
                            ordered = T),
       #'clean Indicator text -------------------------------------------
       Indicator = str_replace(Indicator, "Int. Out.", "Int. Out"),
+      Indicator = str_replace(Indicator, "Int. Out 1 'En", "Int. Out 1. 'En"), #Martina flagged this
       Indicator = str_replace(Indicator, "Out2", "Out 2"),
       Indicator = str_replace(Indicator, "Out3", "Out 3"),
       Indicator = str_replace(Indicator, "Out4", "Out 4"),
