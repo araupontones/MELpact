@@ -80,7 +80,7 @@ crear_xlsx_annex <- function(exfile,
       mergeCells(wb, "sheet", cols = 1:2, rows = row)
       addStyle(wb,sheet = "sheet",style_milestones,rows =row,cols = 1:2, gridExpand = T)
 
-      writeData(wb,sheet = "sheet",startRow = row, startCol = 3, descriptions$Description[r])
+      writeData(wb,sheet = "sheet",startRow = row, startCol = 3, descriptions$Description_new[r])
 
       writeData(wb,sheet = "sheet",startRow = row, startCol = 4, descriptions$Quarter_expected[r])
       writeData(wb,sheet = "sheet",startRow = row, startCol = 5, descriptions$Quarter_reported[r])
