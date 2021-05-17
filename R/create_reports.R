@@ -109,7 +109,8 @@ create_reports <- function(dir_downloads = "downloads",
     #'bind with training indicators
     rbind(skills) %>%
     #'All of these results were reported
-    mutate(Type = "In_reported")
+    mutate(Type = "In_reported") %>%
+    distinct()
 
 
 
