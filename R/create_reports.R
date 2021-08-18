@@ -64,8 +64,7 @@ create_reports <- function(dir_downloads = "downloads",
     ## count indicator (the variable counts, counts the number of times and indicator has been met)
     mutate(count = case_when(str_detect(result_logframe, "Int. Out 4|Outcome 4") ~ as.numeric(funds),
                              T ~ 1),
-           Quarter_reported = case_when(str_detect(Quarter_reported, "list") ~ str_extract(Quarter_reported, '(?<=display_value = \")(.*?)(?=\\")'),
-                                        T ~ Quarter_reported
+           mutate(across(c(Quarter_reported, Project), unlist_character)
            )
     ) %>%
     select(-funds)
@@ -275,10 +274,10 @@ create_reports <- function(dir_downloads = "downloads",
 
 
   #export files
-  write_rds(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
-  write.csv(indicators, file.path(dir_clean, "indicators.csv"))
-  write.csv(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
-  write_rds(reporte_cuenta, file.path(dir_clean,"reporte_cuenta.rds"))
+  rio::export(refreshed_time, file.path(dir_clean,"refreshed_time.rds"))
+  rio::export(indicators, file.path(dir_clean, "indicators.csv"))
+  rio::export(reporte_cuenta, file.path(dir_clean, "reporte_cuenta.csv"))
+  rio::export(reporte_cuenta, file.path(dir_clean,"reporte_cuenta.rds"))
 
 
   #drop skills from reporte to dashboard (it was creating duplicates)
