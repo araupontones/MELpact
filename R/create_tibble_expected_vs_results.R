@@ -10,12 +10,12 @@
 #'
 
 tibble_expected_vs_approved <- function(db = reporte_cuenta,
-                                         by = c("Country", "PACT", "Component"),
-                                         filter_country = "",
-                                         filter_component = "",
-                                         up_to_quarter = quarter_filter,
-                                         previous_quarter = previous_quarter,
-                                         ...){
+                                        by = c("Country", "PACT", "Component"),
+                                        filter_country = "",
+                                        filter_component = "",
+                                        up_to_quarter = quarter_filter,
+                                        previous_quarter = previous_quarter,
+                                        ...){
 
   #keep of all countries if PACT is selected
   if(by == "PACT"){
@@ -64,8 +64,8 @@ tibble_expected_vs_approved <- function(db = reporte_cuenta,
     summarise(across(all_of(c("Expected", "Approved")), suma), .groups ="drop")
 
 
-  data_quarter <- data %>%
-    filter(Quarter == up_to_quarter) %>%
+  data_semester <- data %>%
+    filter(Quarter %in% quarters_semester) %>%
     group_by(Element, Indicator) %>%
     summarise(across(all_of(c("Expected", "Approved")), suma), .groups ="drop")
 
@@ -73,14 +73,9 @@ tibble_expected_vs_approved <- function(db = reporte_cuenta,
   return(list("data_total"= data_total,
               "data_total_tilltoday"=data_total_tilltoday,
               "data_total_tillprevq"=data_total_tillprevq,
-              "data_quarter" = data_quarter)
+              "data_semester" = data_semester)
   )
 
 
 
 }
-
-
-
-
-
