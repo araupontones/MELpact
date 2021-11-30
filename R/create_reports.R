@@ -62,7 +62,7 @@ create_reports <- function(dir_downloads = "downloads",
            Quarter, Status, funds, Modified_Time, ID) %>%
     rename(Quarter_reported = Quarter) %>%
     ## count indicator (the variable counts, counts the number of times and indicator has been met)
-    mutate(count = case_when(str_detect(result_logframe, "Int. Out 4|Outcome 4") ~ as.numeric(funds),
+    mutate(count = case_when(str_detect(result_logframe, "Int. Out. 4|Outcome 4") ~ as.numeric(funds),
                              T ~ 1),
            mutate(across(c(Quarter_reported, Project), unlist_character)
            )
